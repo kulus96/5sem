@@ -3,7 +3,7 @@
 #include <gazebo/transport/transport.hh>
 
 #include <opencv2/opencv.hpp>
-//#include <fl/Headers.h>
+#include <fl/Headers.h>
 
 #include <iostream>
 #include "lidar.h"
@@ -107,7 +107,7 @@ int main(int _argc, char **_argv) {
 
 
   while (true)
-  {
+  {  
     gazebo::common::Time::MSleep(10);
 
     mutex.lock();

@@ -8,7 +8,8 @@ LIBS += -L$$OUT_PWD/../../../fuzzylite/fuzzylite/release/bin -lfuzzylite-static
 
 SOURCES += main.cpp \
     lidar.cpp \
-    camera.cpp
+    camera.cpp \
+    fuzzyControl.cpp
 
 CONFIG += link_pkgconfig
 PKGCONFIG += gazebo
@@ -16,4 +17,8 @@ PKGCONFIG += opencv
 
 HEADERS += \
     lidar.h \
-    camera.h
+    camera.h \
+    fuzzyControl.h
+
+DISTFILES += \
+    fuzzyControl.fll

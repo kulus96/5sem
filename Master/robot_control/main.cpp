@@ -3,15 +3,17 @@
 #include <gazebo/transport/transport.hh>
 
 #include <opencv2/opencv.hpp>
-//#include <fl/Headers.h>
+#include <fl/Headers.h>
 
 #include <iostream>
 #include "lidar.h"
 #include "camera.h"
+#include "fuzzyControl.h"
 
 static boost::mutex mutex;
 lidar laser;
 camera view;
+fuzzyControl bug;
 
 void statCallback(ConstWorldStatisticsPtr &_msg) {
   (void)_msg;
@@ -55,6 +57,7 @@ void wrapperlidarCallback(ConstLaserScanStampedPtr &msg)
 int main(int _argc, char **_argv) {
 
 
+  bug.init();
   // Load gazebo
   gazebo::client::setup(_argc, _argv);
 
@@ -87,22 +90,21 @@ int main(int _argc, char **_argv) {
   worldPublisher->WaitForConnection();
   worldPublisher->Publish(controlMessage);
 
-  const int key_left = 81;
+  /*const int key_left = 81;
   const int key_up = 82;
   const int key_down = 84;
   const int key_right = 83;
-  const int key_esc = 27;
+  const int key_esc = 27;*/
 
-  float speed = 0.0;
+  float speed = 0.2;
   float dir = 0.0;
 
   // Loop
 
-
   while (true)
-  {
+  {  
     gazebo::common::Time::MSleep(10);
-
+    /*
     mutex.lock();
     int key = cv::waitKey(1);
     mutex.unlock();
@@ -122,8 +124,9 @@ int main(int _argc, char **_argv) {
       // slow down
       //      speed *= 0.1;
       //      dir *= 0.1;
-    }
-
+    }*/
+    std::cout << "Distance: " << laser.getShortestDistance() << " Angle: " << laser.getAngleShortestDistance() << std::endl;
+    dir += bug.fuzzyController(laser.getShortestDistance(),laser.getAngleShortestDistance());
     // Generate a pose
     ignition::math::Pose3d pose(double(speed), 0, 0, 0, 0, double(dir));
 

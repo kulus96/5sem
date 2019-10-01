@@ -14,7 +14,7 @@ class camera
 {
 public:
     camera();
-    void cameraCallback(ConstLaserScanStampedPtr &msg);
+    void cameraCallback(ConstImageStampedPtr &msg);
 };
 
 #endif // CAMERA_H

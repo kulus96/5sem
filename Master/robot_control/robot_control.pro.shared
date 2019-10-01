@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
+<<<<<<< HEAD:Master/robot_control/robot_control.pro.user
 <!-- Written by QtCreator 3.5.1, 2019-10-01T14:29:16. -->
+=======
+<!-- Written by QtCreator 3.5.1, 2019-10-01T13:36:58. -->
+>>>>>>> 3933f636a9cae0d885e7a254d5a9f7b90529ab50:Master/robot_control/robot_control.pro.shared
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>

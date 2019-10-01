@@ -6,7 +6,7 @@ camera::camera()
 }
 
 
-void camera::cameraCallback(ConstLaserScanStampedPtr &msg)
+void camera::cameraCallback(ConstImageStampedPtr &msg)
 {
 std::size_t width = msg->image().width();
 std::size_t height = msg->image().height();
@@ -17,7 +17,7 @@ im = im.clone();
 cv::cvtColor(im, im, CV_RGB2BGR);
 
 cameramutex.lock();
-//cv::imshow("camera", im);
+cv::imshow("camera", im);
 cameramutex.unlock();
 
 }

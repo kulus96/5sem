@@ -7,9 +7,11 @@
 
 #include <iostream>
 #include "lidar.h"
+#include "camera.h"
 
 static boost::mutex mutex;
 lidar laser;
+camera view;
 
 void statCallback(ConstWorldStatisticsPtr &_msg) {
   (void)_msg;
@@ -38,19 +40,10 @@ void poseCallback(ConstPosesStampedPtr &_msg) {
 
 }
 
-void cameraCallback(ConstImageStampedPtr &msg) {
+void wrapperCameraCallback(ConstImageStampedPtr &msg)
+{
 
-  std::size_t width = msg->image().width();
-  std::size_t height = msg->image().height();
-  const char *data = msg->image().data().c_str();
-  cv::Mat im(int(height), int(width), CV_8UC3, const_cast<char *>(data));
-
-  im = im.clone();
-  cv::cvtColor(im, im, CV_RGB2BGR);
-
-  mutex.lock();
-  cv::imshow("camera", im);
-  mutex.unlock();
+   view.cameraCallback(msg);
 }
 
 void wrapperlidarCallback(ConstLaserScanStampedPtr &msg)
@@ -77,7 +70,7 @@ int main(int _argc, char **_argv) {
       node->Subscribe("~/pose/info", poseCallback);
 
   gazebo::transport::SubscriberPtr cameraSubscriber =
-      node->Subscribe("~/pioneer2dx/camera/link/camera/image", cameraCallback);
+      node->Subscribe("~/pioneer2dx/camera/link/camera/image", wrapperCameraCallback);
 
   gazebo::transport::SubscriberPtr lidarSubscriber =
       node->Subscribe("~/pioneer2dx/hokuyo/link/laser/scan",wrapperlidarCallback);

@@ -7,11 +7,13 @@ INCLUDEPATH += $$PWD/../../../fuzzylite/fuzzylite
 LIBS += -L$$OUT_PWD/../../../fuzzylite/fuzzylite/release/bin -lfuzzylite-static
 
 SOURCES += main.cpp \
-    lidar.cpp
+    lidar.cpp \
+    camera.cpp
 
 CONFIG += link_pkgconfig
 PKGCONFIG += gazebo
 PKGCONFIG += opencv
 
 HEADERS += \
-    lidar.h
+    lidar.h \
+    camera.h

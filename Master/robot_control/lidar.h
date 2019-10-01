@@ -25,13 +25,22 @@ class lidar
         void coutlidar();
         float getShortestDistance();
         float getAngleShortestDistance();
+        void showLidar();
+
 
     private:
         std::vector <laser> Laser;
         int runs =0;
         float shortestDistance;
         float angleShortestDistance;
-
+        float angle_min;
+        float angle_increment;
+        float range_max;
+        float range_min;
+        int nintensities;
+        int nranges;
+        int sec;
+        int nsec;
 };
 
 #endif // lidar_H

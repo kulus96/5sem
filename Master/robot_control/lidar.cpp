@@ -8,9 +8,9 @@ lidar::lidar()
 void lidar::lidarCallback(ConstLaserScanStampedPtr &msg)
 {
   lidarmutex.lock();
-  int nranges = msg->scan().ranges_size();
     if(runs == 0)
     {
+        nranges = msg->scan().ranges_size();
         runs = 1;
         laser test ;
         test.distance = 0;
@@ -20,14 +20,19 @@ void lidar::lidarCallback(ConstLaserScanStampedPtr &msg)
          {
             Laser.push_back(test);
          }
+         angle_min = float(msg->scan().angle_min());
+         angle_increment = float(msg->scan().angle_step());
+
+         range_max = float(msg->scan().range_max());
+         range_min = float(msg->scan().range_min());
+
+         nintensities = msg->scan().intensities_size();
+         sec = msg->time().sec();
+         nsec = msg->time().nsec();
+
     }
 
 
-
-  float angle_min = float(msg->scan().angle_min());
-  float angle_increment = float(msg->scan().angle_step());
-
-  float range_max = float(msg->scan().range_max());
          
   //int nintensities = msg->scan().intensities_size();
   
@@ -59,19 +64,17 @@ void lidar::lidarCallback(ConstLaserScanStampedPtr &msg)
   }
   shortestDistance = tempShortestDist;;
   angleShortestDistance = tempAngleShortestDist;
-  
+
   lidarmutex.unlock();
 }
 
 void lidar::coutlidar()
 {
 
-    for(int i = 0; i<Laser.size();i++)
+    for(int i = 0; i<int(Laser.size());i++)
     {
         std::cout << "i: " << i << " Angle: " << Laser[i].angle << " Distance: "<< Laser[i].distance << std::endl;
     }
-    runs = 2;
-
 }
 
 float lidar::getShortestDistance()
@@ -82,4 +85,34 @@ float lidar::getShortestDistance()
 float lidar::getAngleShortestDistance()
 {
     return angleShortestDistance;
+}
+
+void lidar::showLidar()
+{
+    assert(nranges == nintensities);
+    float px_per_m = 200 / range_max;
+    int width = 400;
+    int height = 400;
+    cv::Mat im(height, width, CV_8UC3);
+    im.setTo(0);
+    for (int i = 0; i < nranges; i++) {
+      float angle = Laser[i].angle;
+      float range = std::min(Laser[i].distance,range_max); //std::min(float(msg->scan().ranges(i)), range_max);
+      //    double intensity = msg->scan().intensities(i);
+      cv::Point2f startpt(200.5f + range_min * px_per_m * std::cos(angle),
+                          200.5f - range_min * px_per_m * std::sin(angle));
+      cv::Point2f endpt(200.5f + range * px_per_m * std::cos(angle),
+                        200.5f - range * px_per_m * std::sin(angle));
+      cv::line(im, startpt * 16, endpt * 16, cv::Scalar(255, 255, 255, 255), 1,
+               16, 4);
+
+      //    std::cout << angle << " " << range << " " << intensity << std::endl;
+    }
+   cv::circle(im, cv::Point(200, 200), 2, cv::Scalar(0, 0, 255));
+   cv::putText(im, std::to_string(sec) + ":" + std::to_string(nsec),
+                cv::Point(10, 20), cv::FONT_HERSHEY_PLAIN, 1.0,
+                cv::Scalar(255, 0, 0));
+    lidarmutex.lock();
+    cv::imshow("lidar", im);
+    lidarmutex.unlock();
 }

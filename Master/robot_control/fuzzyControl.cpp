@@ -1,28 +1,32 @@
 #include "fuzzyControl.h"
 
-fuzzyControl(string f)
+
+
+fuzzyControl::fuzzyControl()
 {
-    engine = FllImporter().fromFile(f);
 }
 
-float fuzzyController(float dist, float angle)
+
+void fuzzyControl::init()
 {
-    using namespace fl;
+    engine= FllImporter().fromFile("fuzzyControl.fll");
+    obstacle = engine->getInputVariable("obstacle");
+    distance = engine->getInputVariable("distance");
+    steer = engine->getOutputVariable("mSteer");
+}
 
-
+float fuzzyControl::fuzzyController(float dist, float angle)
+{
     std::string status;
     if (not engine->isReady(&status))
     {
         throw Exception("[engine error] engine is not ready:n" + status, FL_AT);
     }
-    obstacle = engine->getInputVariable("obstacle");
-    distance = engine->getInputVariable("distance");
-    steer = engine->getOutputVariable("mSteer");
-
-
     obstacle->setValue(angle);
     distance->setValue(dist);
     engine->process();
-    return steer;
+    std:: cout << Op::str(steer->getValue()) <<std::endl;
+
+    return float(steer->getValue());
 
 }

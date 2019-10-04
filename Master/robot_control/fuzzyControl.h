@@ -2,16 +2,16 @@
 
 #include "fl/Headers.h"
 #include <iostream>
-
+using namespace fl;
 #define fuzzyControl_H
 
 class fuzzyControl
 {
 	public:
-                fuzzyControl(std::string);
+                fuzzyControl();
+                void init();
                 float fuzzyController(float,float);
 
-	private:
                 Engine* engine;
                 InputVariable* obstacle;
                 InputVariable* distance;

@@ -4,15 +4,9 @@ InputVariable: obstacle
   enabled: true
   range: -2.269 2.269
   lock-range: false
-<<<<<<< HEAD
-  term: SL Ramp -2.269 -0.080
-  term: SC Triangle -0.100 0.000 0.100
-  term: SR Ramp  0.080 2.269
-=======
   term: SL Ramp -2.269 -0.80
-  term: SC Triangle -1.000 0.000 1.0
+  term: SC Triangle -1.000 0.000 1.000
   term: SR Ramp  0.80 2.269
->>>>>>> 300fac4d0a78db9912ebd298b87e4cf995b40899
 
 InputVariable: distance
   enabled: true
@@ -36,9 +30,9 @@ OutputVariable: mSteer
   defuzzifier: Centroid 100
   default: 0
   lock-previous: false
-  term: left Ramp -0.400 0.100
-  term: straight Rectangle -0.100 0.000 0.100
-  term: right Ramp 0.400 0.100
+  term: left Ramp -0.400 0.050
+  term: straight Rectangle -0.050 0.000 0.050
+  term: right Ramp 0.050 0.400
 
 RuleBlock: mamdani
   enabled: true
@@ -46,14 +40,11 @@ RuleBlock: mamdani
   disjunction: none
   implication: AlgebraicProduct
   activation: General
-<<<<<<< HEAD
+
   rule: if obstacle is SL and distance is close then mSteer is right and speed is slow
   rule: if obstacle is SR and distance is close then mSteer is left and speed is slow
-  rule: if obstacle is SC and distance is close then msteer is right and speed is slow
-  rule: if distance is far then mSteer is straight and speed is fast
+  rule: if obstacle is SC and distance is close then mSteer is right and speed is slow
+  rule: if obstacle is SL or SR or SC and distance is far then mSteer is straight and speed is fast
+  rule: if obstacle is SL and SR and distance is far then mSteer is straight and speed is slow
 
-=======
-  rule: if obstacle is SL and distance is close then mSteer is right
-  rule: if obstacle is SR and distance is close then mSteer is left
-  rule: if obstacle is SC and distance is close then msteer is right
->>>>>>> 300fac4d0a78db9912ebd298b87e4cf995b40899
+

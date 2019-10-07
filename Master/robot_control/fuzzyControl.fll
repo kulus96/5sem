@@ -5,27 +5,33 @@ InputVariable: obstacle
   range: -1.600 1.600
   lock-range: false
   term: leftmost Ramp -0.785 -1.600 
-  term: left Triangle -1.571 -0.885 -0.100
-  term: centerleft Triangle -0.200 -0.100 0.000 
-  term: center Triangle -0.100 0.000 0.100
-  term: centerright Triangle 0.000 0.100 0.200
-  term: right Triangle 0.100 0.885 1.571
+  term: left PiShape -1.300 -1.047 -1.047 -0.523
+  term: centerleft PiShape -1.047 -0.523 -0.523 -0.223 
+  term: center Triangle -0.223 0.000 0.223
+  term: centerright PiShape 0.223 0.523 0.523 1.047
+  term: right PiShape 0.523 1.047 -1.047 1.300
   term: rightmost Ramp  0.785 1.600
 
 InputVariable: distance
   enabled: true
   range: 0.000 10.000
   lock-range: false
-  term: close Rectangle 1.000 0.00
-  term: medium PiShape 0.800 1.50 2.000 3.000
-  term: far Ramp 1.500 10.000
+  term: close Rectangle 0.000 1.000
+  term: medium PiShape 1.000 1.500 2.000 3.000
+  term: far Ramp 2.000 10.000
 
-#OutputVariable: speed
-  #enabled: true
-  #range: -1.200 1.200
-  #lock-range: false
-  #term: slow Ramp -1.200 1.200
-  #term: fast Ramp 1.200 -1.200
+OutputVariable: speed
+  enabled: true
+  range: -1.000 1.000 #-1.200 1.200
+  lock-range: false
+  aggregation: Maximum
+  defuzzifier: Centroid 100
+  default: 0
+  lock-previous: false
+  term: reverse Rectangle 0.000 -1.000
+  term: stop Rectangle 0.000 0.050
+  term: slow Triangle 0.050 0.200 0.400
+  term: fast Ramp 0.300 1.000
 
 OutputVariable: steer
   enabled: true
@@ -36,11 +42,11 @@ OutputVariable: steer
   default: 0
   lock-previous: false
   term: steerhardright Ramp -0.200 -0.400
-  term: steerright PiShape -0.400 -0.300 -0.3 -0.100
-  term: steerrightsmall PiShape -0.100 -0.050 -0.050 0.000 
-  term: steerstraight Rectangle -0.010 0.000 0.010
-  term: steerleftsmall PiShape 0.000 0.050 0.050 0.100 
-  term: steerleft PiShape 0.100 0.300 0.3 0.400
+  term: steerright PiShape -0.300 -0.200 -0.200 -0.100
+  term: steerrightsmall PiShape -0.100 -0.050 -0.050 -0.010 
+  term: steerstraight Rectangle -0.010 0.010
+  term: steerleftsmall PiShape 0.010 0.050 0.050 0.100 
+  term: steerleft PiShape 0.100 0.200 0.200 0.300
   term: steerhardleft Ramp 0.200 0.400
 
 RuleBlock: mamdani
@@ -51,26 +57,27 @@ RuleBlock: mamdani
   activation: General
  
 	#Distance fare
-  rule: if distance is far and obstacle is leftmost then steer is steerstraight
-  rule: if distance is far and obstacle is left then steer is steerstraight
-  rule: if distance is far and obstacle is centerleft then steer is steerstraight
-  rule: if distance is far and obstacle is center then steer is steerstraight
-  rule: if distance is far and obstacle is centerright then steer is steerstraight
-  rule: if distance is far and obstacle is right then steer is steerstraight
-  rule: if distance is far and obstacle is rightmost then steer is steerstraight
+  rule: if distance is far and obstacle is leftmost then steer is steerstraight and speed is fast
+  rule: if distance is far and obstacle is left then steer is steerstraight and speed is fast
+  rule: if distance is far and obstacle is centerleft then steer is steerstraight and speed is fast
+  rule: if distance is far and obstacle is center then steer is steerstraight and speed is fast
+  rule: if distance is far and obstacle is centerright then steer is steerstraight and speed is fast
+  rule: if distance is far and obstacle is right then steer is steerstraight and speed is fast
+  rule: if distance is far and obstacle is rightmost then steer is steerstraight and speed is fast
 	#Distance medium
-  rule: if distance is medium and obstacle is leftmost then steer is steerstraight
-  rule: if distance is medium and obstacle is left then steer is steerstraight
-  rule: if distance is medium and obstacle is centerleft then steer is steerrightsmall
-  rule: if distance is medium and obstacle is center then steer is steerright  
-  rule: if distance is medium and obstacle is centerright then steer is steerleftsmall
-  rule: if distance is medium and obstacle is right then steer is steerstraight
-  rule: if distance is medium and obstacle is rightmost then steer is steerstraight
+  rule: if distance is medium and obstacle is leftmost then steer is steerstraight and speed is fast
+  rule: if distance is medium and obstacle is left then steer is steerstraight and speed is slow
+  rule: if distance is medium and obstacle is centerleft then steer is steerrightsmall and speed is slow
+  rule: if distance is medium and obstacle is center then steer is steerright and speed is slow
+  rule: if distance is medium and obstacle is centerright then steer is steerleftsmall and speed is slow
+  rule: if distance is medium and obstacle is right then steer is steerstraight and speed is slow
+  rule: if distance is medium and obstacle is rightmost then steer is steerstraight and speed is fast
 	#Distance close
-  rule: if distance is close and obstacle is leftmost then steer is steerhardright
-  rule: if distance is close and obstacle is left then steer is steerhardright
-  rule: if distance is close and obstacle is centerleft then steer is steerhardright
-  rule: if distance is close and obstacle is center then steer is steerhardright
-  rule: if distance is close and obstacle is centerright then steer is steerhardleft  
-  rule: if distance is close and obstacle is right then steer is steerhardleft
-  rule: if distance is close and obstacle is rightmost then steer is steerhardleft
+  rule: if distance is close and obstacle is leftmost then steer is steerright and speed is slow
+  rule: if distance is close and obstacle is left then steer is steerright and speed is slow
+  rule: if distance is close and obstacle is centerleft then steer is steerhardright and speed is stop
+  rule: if distance is close and obstacle is center then steer is steerhardright and speed is stop
+  rule: if distance is close and obstacle is centerright then steer is steerhardleft and speed is stop
+  rule: if distance is close and obstacle is right then steer is steerleft and speed is slow
+  rule: if distance is close and obstacle is rightmost then steer is steerleft and speed is slow
+

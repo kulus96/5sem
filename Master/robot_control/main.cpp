@@ -108,7 +108,7 @@ int main(int _argc, char **_argv) {
     control = bug.fuzzyController(laser.getShortestDistance(),laser.getAngleShortestDistance());
 
     std::cout << "Speed: " << control[1] << " Dir: " << control[0] << std::endl;
-    control[1] = 0.2;
+    //control[1] = 0.2;
     // Generate a pose
     ignition::math::Pose3d pose(double(control[1]), 0, 0, 0, 0, double(control[0]));
 

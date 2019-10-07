@@ -14,7 +14,7 @@ void fuzzyControl::init()
     obstacle = engine->getInputVariable("obstacle");
     distance = engine->getInputVariable("distance");
     mSteer = engine->getOutputVariable("steer");
-    //mSpeed = engine->getOutputVariable("mSpeed");
+    mSpeed = engine->getOutputVariable("speed");
     output.push_back(0);
     output.push_back(0);
 }
@@ -35,7 +35,7 @@ std::vector<double> fuzzyControl::fuzzyController(float dist, float angle)
 
     mutex.unlock();
     output[0] = double(mSteer->getValue());
-    //output[1] = double(mSpeed->getValue());
+    output[1] = double(mSpeed->getValue());
     }
     return output;
 }

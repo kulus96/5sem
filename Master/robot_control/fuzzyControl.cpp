@@ -9,14 +9,21 @@ fuzzyControl::fuzzyControl()
 
 void fuzzyControl::init()
 {
+
     engine= FllImporter().fromFile("fuzzyControl.fll");
     obstacle = engine->getInputVariable("obstacle");
     distance = engine->getInputVariable("distance");
-    steer = engine->getOutputVariable("mSteer");
+    mSteer = engine->getOutputVariable("steer");
+    //mSpeed = engine->getOutputVariable("mSpeed");
+    output.push_back(0);
+    output.push_back(0);
 }
 
-float fuzzyControl::fuzzyController(float dist, float angle)
+std::vector<double> fuzzyControl::fuzzyController(float dist, float angle)
 {
+    if(abs(angle) < 3.14/2)
+    {
+    mutex.lock();
     std::string status;
     if (not engine->isReady(&status))
     {
@@ -25,8 +32,10 @@ float fuzzyControl::fuzzyController(float dist, float angle)
     obstacle->setValue(angle);
     distance->setValue(dist);
     engine->process();
-    std:: cout << Op::str(steer->getValue()) <<std::endl;
 
-    return float(steer->getValue());
-
+    mutex.unlock();
+    output[0] = double(mSteer->getValue());
+    //output[1] = double(mSpeed->getValue());
+    }
+    return output;
 }

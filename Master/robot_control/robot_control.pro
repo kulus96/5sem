@@ -18,7 +18,8 @@ PKGCONFIG += opencv
 HEADERS += \
     lidar.h \
     camera.h \
-    fuzzyControl.h
+    fuzzyControl.h \
+    define.h
 
 DISTFILES += \
     fuzzyControl.fll

@@ -6,6 +6,7 @@
 #include <fl/Headers.h>
 #include <iostream>
 #include <vector>
+#include "define.h"
 
 #define lidar_H
 
@@ -14,21 +15,19 @@ struct laser
     float distance = 0;
     float angle= 0;
 };
-static boost::mutex lidarmutex;
 
 class lidar
 {
-    public:
+
+public:
 
          lidar();
-        void lidarCallback(ConstLaserScanStampedPtr &msg);
-        void coutlidar();
+        void lidarCallback(ConstLaserScanStampedPtr &msg,bool);
         float getShortestDistance();
         float getAngleShortestDistance();
+
+private:
         void showLidar();
-
-
-    private:
         std::vector <laser> Laser;
         int runs =0;
         float shortestDistance;

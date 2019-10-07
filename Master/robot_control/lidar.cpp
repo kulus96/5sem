@@ -5,9 +5,8 @@ lidar::lidar()
 
 }
 
-void lidar::lidarCallback(ConstLaserScanStampedPtr &msg)
+void lidar::lidarCallback(ConstLaserScanStampedPtr &msg,bool showlidar)
 {
-  lidarmutex.lock();
     if(runs == 0)
     {
         nranges = msg->scan().ranges_size();
@@ -32,12 +31,7 @@ void lidar::lidarCallback(ConstLaserScanStampedPtr &msg)
 
     }
 
-
-         
-  //int nintensities = msg->scan().intensities_size();
-  
-  
-  //assert(nranges == nintensities);
+  assert(nranges == nintensities);
   
   float currentAngle = angle_min;
   float tempShortestDist = 10;
@@ -65,16 +59,12 @@ void lidar::lidarCallback(ConstLaserScanStampedPtr &msg)
   shortestDistance = tempShortestDist;;
   angleShortestDistance = tempAngleShortestDist;
 
-  lidarmutex.unlock();
-}
+  if (showlidar)
+  {
+      showLidar();
 
-void lidar::coutlidar()
-{
+  }
 
-    for(int i = 0; i<int(Laser.size());i++)
-    {
-        std::cout << "i: " << i << " Angle: " << Laser[i].angle << " Distance: "<< Laser[i].distance << std::endl;
-    }
 }
 
 float lidar::getShortestDistance()
@@ -97,8 +87,8 @@ void lidar::showLidar()
     im.setTo(0);
     for (int i = 0; i < nranges; i++) {
       float angle = Laser[i].angle;
-      float range = std::min(Laser[i].distance,range_max); //std::min(float(msg->scan().ranges(i)), range_max);
-      //    double intensity = msg->scan().intensities(i);
+      float range = std::min(Laser[i].distance,range_max);
+
       cv::Point2f startpt(200.5f + range_min * px_per_m * std::cos(angle),
                           200.5f - range_min * px_per_m * std::sin(angle));
       cv::Point2f endpt(200.5f + range * px_per_m * std::cos(angle),
@@ -106,13 +96,13 @@ void lidar::showLidar()
       cv::line(im, startpt * 16, endpt * 16, cv::Scalar(255, 255, 255, 255), 1,
                16, 4);
 
-      //    std::cout << angle << " " << range << " " << intensity << std::endl;
     }
    cv::circle(im, cv::Point(200, 200), 2, cv::Scalar(0, 0, 255));
    cv::putText(im, std::to_string(sec) + ":" + std::to_string(nsec),
                 cv::Point(10, 20), cv::FONT_HERSHEY_PLAIN, 1.0,
                 cv::Scalar(255, 0, 0));
-    lidarmutex.lock();
-    cv::imshow("lidar", im);
-    lidarmutex.unlock();
+    mutex.lock();
+        cv::imshow("lidar", im);
+    mutex.unlock();
+    cv::waitKey(1);
 }

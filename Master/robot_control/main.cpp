@@ -9,8 +9,9 @@
 #include "lidar.h"
 #include "camera.h"
 #include "fuzzyControl.h"
+#include <vector>
 
-static boost::mutex mutex;
+
 lidar laser;
 camera view;
 fuzzyControl bug;
@@ -28,7 +29,7 @@ void poseCallback(ConstPosesStampedPtr &_msg) {
 
   for (int i = 0; i < _msg->pose_size(); i++) {
     if (_msg->pose(i).name() == "pioneer2dx") {
-
+/*
       std::cout << std::setprecision(2) << std::fixed << std::setw(6)
                 << _msg->pose(i).position().x() << std::setw(6)
                 << _msg->pose(i).position().y() << std::setw(6)
@@ -36,7 +37,7 @@ void poseCallback(ConstPosesStampedPtr &_msg) {
                 << _msg->pose(i).orientation().w() << std::setw(6)
                 << _msg->pose(i).orientation().x() << std::setw(6)
                 << _msg->pose(i).orientation().y() << std::setw(6)
-                << _msg->pose(i).orientation().z() << std::endl;
+                << _msg->pose(i).orientation().z() << std::endl;*/
     }
   }
 
@@ -44,20 +45,17 @@ void poseCallback(ConstPosesStampedPtr &_msg) {
 
 void wrapperCameraCallback(ConstImageStampedPtr &msg)
 {
-
-   view.cameraCallback(msg);
+  view.cameraCallback(msg,1);
 }
 
 void wrapperlidarCallback(ConstLaserScanStampedPtr &msg)
 {
-  laser.lidarCallback(msg);
+  laser.lidarCallback(msg,1);
 }
 
 
 int main(int _argc, char **_argv) {
 
-
-  bug.init();
   // Load gazebo
   gazebo::client::setup(_argc, _argv);
 
@@ -76,7 +74,7 @@ int main(int _argc, char **_argv) {
       node->Subscribe("~/pioneer2dx/camera/link/camera/image", wrapperCameraCallback);
 
   gazebo::transport::SubscriberPtr lidarSubscriber =
-      node->Subscribe("~/pioneer2dx/hokuyo/link/laser/scan",wrapperlidarCallback);
+      node->Subscribe("~/pioneer2dx/hokuyo/link/laser/scan", wrapperlidarCallback);
 
   // Publish to the robot vel_cmd topic
   gazebo::transport::PublisherPtr movementPublisher =
@@ -90,45 +88,31 @@ int main(int _argc, char **_argv) {
   worldPublisher->WaitForConnection();
   worldPublisher->Publish(controlMessage);
 
-  /*const int key_left = 81;
-  const int key_up = 82;
-  const int key_down = 84;
-  const int key_right = 83;
-  const int key_esc = 27;*/
-
-  float speed = 0.2;
-  float dir = 0.0;
+  //float speed = 0.;
+  //float dir = 0.0;
 
   // Loop
+    bug.init();
 
+  std::vector<double> control;
+
+  control.push_back(0);
+  control.push_back(0);
   while (true)
   {  
     gazebo::common::Time::MSleep(10);
-    /*
-    mutex.lock();
-    int key = cv::waitKey(1);
-    mutex.unlock();
+    cv::waitKey(1);
 
-    if (key == key_esc)
-      break;
-
-    if ((key == key_up) && (speed <= 1.2f))
-      speed += 0.05;
-    else if ((key == key_down) && (speed >= -1.2f))
-      speed -= 0.05;
-    else if ((key == key_right) && (dir <= 0.4f))
-      dir += 0.05;
-    else if ((key == key_left) && (dir >= -0.4f))
-      dir -= 0.05;
-    else {
-      // slow down
-      //      speed *= 0.1;
-      //      dir *= 0.1;
-    }*/
     std::cout << "Distance: " << laser.getShortestDistance() << " Angle: " << laser.getAngleShortestDistance() << std::endl;
-    dir += bug.fuzzyController(laser.getShortestDistance(),laser.getAngleShortestDistance());
+
+    control = bug.fuzzyController(laser.getShortestDistance(),laser.getAngleShortestDistance());
+
+    std::cout << "Speed: " << control[1] << " Dir: " << control[0] << std::endl;
+    control[1] = 0.2;
     // Generate a pose
-    ignition::math::Pose3d pose(double(speed), 0, 0, 0, 0, double(dir));
+    ignition::math::Pose3d pose(double(control[1]), 0, 0, 0, 0, double(control[0]));
+
+
 
     // Convert to a pose message
     gazebo::msgs::Pose msg;

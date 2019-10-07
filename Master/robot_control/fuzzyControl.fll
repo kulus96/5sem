@@ -4,19 +4,22 @@ InputVariable: obstacle
   enabled: true
   range: -1.600 1.600
   lock-range: false
-  term: left Ramp -0.785 -1.600 
-  term: centerleft Triangle -1.571 -0.785 0.000
-  term: center Triangle -0.785 0.000 0.785
-  term: centerright Triangle 0.000 0.785 1.571
-  term: right Ramp  0.785 1.600
+  term: leftmost Ramp -0.785 -1.600 
+  term: left Triangle -1.571 -0.885 -0.100
+  term: centerleft Triangle -0.200 -0.100 0.000 
+  term: center Triangle -0.100 0.000 0.100
+  term: centerright Triangle 0.000 0.100 0.200
+  term: right Triangle 0.100 0.885 1.571
+  term: rightmost Ramp  0.785 1.600
 
 InputVariable: distance
   enabled: true
   range: 0.000 10.000
   lock-range: false
   term: close Rectangle 1.000 0.00
-  term: medium Triangle 0.800 2.00 4.000
-  term: far Ramp 3.000 10.000
+  term: medium PiShape 0.800 1.50 2.000 3.000
+  term: far Ramp 1.500 10.000
+
 #OutputVariable: speed
   #enabled: true
   #range: -1.200 1.200
@@ -33,9 +36,11 @@ OutputVariable: steer
   default: 0
   lock-previous: false
   term: steerhardright Ramp -0.200 -0.400
-  term: steerright PiShape -0.400 -0.200 -0.2 0.000
-  term: steerstraight Rectangle -0.100 0.000 0.100
-  term: steerleft PiShape 0.000 0.200 0.2 0.400
+  term: steerright PiShape -0.400 -0.300 -0.3 -0.100
+  term: steerrightsmall PiShape -0.100 -0.050 -0.050 0.000 
+  term: steerstraight Rectangle -0.010 0.000 0.010
+  term: steerleftsmall PiShape 0.000 0.050 0.050 0.100 
+  term: steerleft PiShape 0.100 0.300 0.3 0.400
   term: steerhardleft Ramp 0.200 0.400
 
 RuleBlock: mamdani
@@ -44,24 +49,28 @@ RuleBlock: mamdani
   disjunction: Maximum
   implication: Minimum
   activation: General
-  #rule: if distance is close and obstacle is right then steer is steerhardleft
-  #rule: if distance is close and obstacle is left then steer is steerhardright
-  #rule: if distance is close and obstacle is center then steer is steerhardright
+ 
 	#Distance fare
+  rule: if distance is far and obstacle is leftmost then steer is steerstraight
   rule: if distance is far and obstacle is left then steer is steerstraight
   rule: if distance is far and obstacle is centerleft then steer is steerstraight
   rule: if distance is far and obstacle is center then steer is steerstraight
   rule: if distance is far and obstacle is centerright then steer is steerstraight
   rule: if distance is far and obstacle is right then steer is steerstraight
+  rule: if distance is far and obstacle is rightmost then steer is steerstraight
 	#Distance medium
-  rule: if distance is medium and obstacle is left then steer is steerright
-  rule: if distance is medium and obstacle is centerleft then steer is steerright
+  rule: if distance is medium and obstacle is leftmost then steer is steerstraight
+  rule: if distance is medium and obstacle is left then steer is steerstraight
+  rule: if distance is medium and obstacle is centerleft then steer is steerrightsmall
   rule: if distance is medium and obstacle is center then steer is steerright  
-  rule: if distance is medium and obstacle is centerright then steer is steerleft
-  rule: if distance is medium and obstacle is right then steer is steerleft
+  rule: if distance is medium and obstacle is centerright then steer is steerleftsmall
+  rule: if distance is medium and obstacle is right then steer is steerstraight
+  rule: if distance is medium and obstacle is rightmost then steer is steerstraight
 	#Distance close
+  rule: if distance is close and obstacle is leftmost then steer is steerhardright
   rule: if distance is close and obstacle is left then steer is steerhardright
   rule: if distance is close and obstacle is centerleft then steer is steerhardright
-  rule: if distance is close and obstacle is center then steer is steerhardright  
-  rule: if distance is close and obstacle is centerright then steer is steerhardleft
+  rule: if distance is close and obstacle is center then steer is steerhardright
+  rule: if distance is close and obstacle is centerright then steer is steerhardleft  
   rule: if distance is close and obstacle is right then steer is steerhardleft
+  rule: if distance is close and obstacle is rightmost then steer is steerhardleft

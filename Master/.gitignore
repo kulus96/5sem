@@ -1,0 +1,19 @@
+## Specific files ##
+
+Master/robot_control/Makefile
+
+Master/robot_control/robot_control
+
+#build-robot_control-Desktop-Debug
+
+## Compiled Source ##
+#####################
+
+*.o
+*.so
+*.exe
+
+
+## User files ##
+################
+*.pro.user

@@ -2,15 +2,14 @@
 
 camera::camera()
 {
-
+    SC = showcamera;
 }
 
 
-void camera::cameraCallback(ConstImageStampedPtr &msg,bool showCircles)
+void camera::cameraCallback(ConstImageStampedPtr &msg)
 {
-
-    std::size_t width = msg->image().width();
-    std::size_t height = msg->image().height();
+    width = msg->image().width();
+    height = msg->image().height();
     const char *data = msg->image().data().c_str();
     cv::Mat im(int(height), int(width), CV_8UC3, const_cast<char *>(data));
 
@@ -46,11 +45,12 @@ void camera::cameraCallback(ConstImageStampedPtr &msg,bool showCircles)
 
       /// Apply the Hough Transform to find the circles
       HoughCircles( imGray, circles, CV_HOUGH_GRADIENT, 2,80, 100, 20, 0, 60 );
-     if(showCircles)
+     if(SC)
      {
          /// Draw the circles detected
           for( size_t i = 0; i < circles.size(); i++ )
           {
+
               Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
               int radius = cvRound(circles[i][2]);
               // circle center
@@ -108,6 +108,42 @@ void camera::showHistogram(std::string const& name, cv::Mat1b const& image)
     cv::waitKey(1);
 }
 
+
+float camera::posMarbel()
+{
+    if(circles.size())
+    {
+        int largestRadius = 0;
+        int saveIndex = 0;
+
+        for( size_t i = 0; i < circles.size(); i++ )
+        {
+            if(cvRound(circles[i][2])>largestRadius)
+            {
+                  largestRadius = cvRound(circles[i][2]);
+                  saveIndex = i;
+            }
+        }
+        float halfwidth = float(width)/2;
+
+        return float (((cvRound(circles[saveIndex][0]))-halfwidth) *(1.046667/halfwidth) ) ;
+
+    }
+    return 0;
+}
+
+bool camera::marbelLocated()
+{
+    if(circles.size())
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+
+    }
+}
 
 
 

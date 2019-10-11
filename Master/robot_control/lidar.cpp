@@ -2,11 +2,12 @@
 
 lidar::lidar()
 {
-
+    SL = showlidar;
 }
 
-void lidar::lidarCallback(ConstLaserScanStampedPtr &msg,bool showlidar)
+void lidar::lidarCallback(ConstLaserScanStampedPtr &msg)
 {
+
     if(runs == 0)
     {
         nranges = msg->scan().ranges_size();
@@ -59,7 +60,7 @@ void lidar::lidarCallback(ConstLaserScanStampedPtr &msg,bool showlidar)
   shortestDistance = tempShortestDist;;
   angleShortestDistance = tempAngleShortestDist;
 
-  if (showlidar)
+  if (SL)
   {
       showLidar();
 
@@ -105,4 +106,21 @@ void lidar::showLidar()
         cv::imshow("lidar", im);
     mutex.unlock();
     cv::waitKey(1);
+}
+
+
+float lidar::objInFront(float range)
+{
+    float tempShortesDistance = 10;
+    for(int i= 0; i < int(Laser.size()); i++)
+    {
+        if(abs(Laser[i].angle)< range)
+        {
+            if(Laser[i].distance <tempShortesDistance)
+            {
+                tempShortesDistance = Laser[i].distance;
+            }
+        }
+    }
+    return tempShortesDistance;
 }

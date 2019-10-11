@@ -7,6 +7,8 @@
 #include "define.h"
 #include <vector>
 using namespace fl;
+
+
 #define fuzzyControl_H
 
 
@@ -14,7 +16,7 @@ class fuzzyControl
 {
 	public:
                 fuzzyControl();
-                void init();
+                void init(std::string);
                 std::vector<double> fuzzyController(float,float);
 private:
                 Engine* engine;

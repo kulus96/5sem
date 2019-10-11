@@ -22,9 +22,10 @@ class lidar
 public:
 
          lidar();
-        void lidarCallback(ConstLaserScanStampedPtr &msg,bool);
+        void lidarCallback(ConstLaserScanStampedPtr &msg);
         float getShortestDistance();
         float getAngleShortestDistance();
+        float objInFront(float range);
 
 private:
         void showLidar();
@@ -40,6 +41,7 @@ private:
         int nranges;
         int sec;
         int nsec;
+        bool SL;  //show Lidar define i define.h
 };
 
 #endif // lidar_H

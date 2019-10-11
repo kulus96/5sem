@@ -4,9 +4,9 @@ InputVariable: obstacle
   enabled: true
   range: -1.600 1.600
   lock-range: false
-  term: leftmost Ramp -0.785 -1.600 
+  term: leftmost Ramp -0.785 -1.600
   term: left PiShape -1.300 -1.047 -1.047 -0.523
-  term: centerleft PiShape -1.047 -0.523 -0.523 -0.223 
+  term: centerleft PiShape -1.047 -0.523 -0.523 -0.223
   term: center Triangle -0.223 0.000 0.223
   term: centerright PiShape 0.223 0.523 0.523 1.047
   term: right PiShape 0.523 1.047 -1.047 1.300
@@ -43,9 +43,9 @@ OutputVariable: steer
   lock-previous: false
   term: steerhardright Ramp -0.200 -0.400
   term: steerright PiShape -0.300 -0.200 -0.200 -0.100
-  term: steerrightsmall PiShape -0.100 -0.050 -0.050 -0.010 
+  term: steerrightsmall PiShape -0.100 -0.050 -0.050 -0.010
   term: steerstraight Rectangle -0.010 0.010
-  term: steerleftsmall PiShape 0.010 0.050 0.050 0.100 
+  term: steerleftsmall PiShape 0.010 0.050 0.050 0.100
   term: steerleft PiShape 0.100 0.200 0.200 0.300
   term: steerhardleft Ramp 0.200 0.400
 
@@ -55,8 +55,8 @@ RuleBlock: mamdani
   disjunction: Maximum
   implication: Minimum
   activation: General
- 
-	#Distance fare
+
+        #Distance fare
   rule: if distance is far and obstacle is leftmost then steer is steerstraight and speed is fast
   rule: if distance is far and obstacle is left then steer is steerstraight and speed is fast
   rule: if distance is far and obstacle is centerleft then steer is steerstraight and speed is fast
@@ -64,7 +64,7 @@ RuleBlock: mamdani
   rule: if distance is far and obstacle is centerright then steer is steerstraight and speed is fast
   rule: if distance is far and obstacle is right then steer is steerstraight and speed is fast
   rule: if distance is far and obstacle is rightmost then steer is steerstraight and speed is fast
-	#Distance medium
+        #Distance medium
   rule: if distance is medium and obstacle is leftmost then steer is steerstraight and speed is fast
   rule: if distance is medium and obstacle is left then steer is steerstraight and speed is slow
   rule: if distance is medium and obstacle is centerleft then steer is steerrightsmall and speed is slow
@@ -72,7 +72,7 @@ RuleBlock: mamdani
   rule: if distance is medium and obstacle is centerright then steer is steerleftsmall and speed is slow
   rule: if distance is medium and obstacle is right then steer is steerstraight and speed is slow
   rule: if distance is medium and obstacle is rightmost then steer is steerstraight and speed is fast
-	#Distance close
+        #Distance close
   rule: if distance is close and obstacle is leftmost then steer is steerright and speed is slow
   rule: if distance is close and obstacle is left then steer is steerright and speed is slow
   rule: if distance is close and obstacle is centerleft then steer is steerhardright and speed is stop
@@ -80,4 +80,3 @@ RuleBlock: mamdani
   rule: if distance is close and obstacle is centerright then steer is steerhardleft and speed is stop
   rule: if distance is close and obstacle is right then steer is steerleft and speed is slow
   rule: if distance is close and obstacle is rightmost then steer is steerleft and speed is slow
-

@@ -4,55 +4,59 @@
 
 fuzzyControl::fuzzyControl()
 {
+
 }
 
 
-void fuzzyControl::init(std::string path)
+void fuzzyControl::init(std::string path1,std::string path2)
 {
-    std::cout << path << std::endl;
+    std::cout << path1 << std::endl;
+    std::cout << path2 << std::endl;
 
-    engine= FllImporter().fromFile(path);
-    obstacle = engine->getInputVariable("obstacle");
-    distance = engine->getInputVariable("distance");
-    mSteer = engine->getOutputVariable("steer");
-    mSpeed = engine->getOutputVariable("speed");
+    obsEngine1= FllImporter().fromFile(path1);
+    obsAngle1       = obsEngine1->getInputVariable("obstacle");
+    obsDistance1    = obsEngine1->getInputVariable("distance");
+    obsSteer1       = obsEngine1->getOutputVariable("steer");
+    obsSpeed1       = obsEngine1->getOutputVariable("speed");
+
+    dirEngine2= FllImporter().fromFile(path2);
+    dirAngle2 = dirEngine2->getInputVariable("angle");
+    dirSteer2 = dirEngine2->getOutputVariable("steer");
+    dirSpeed2 = dirEngine2->getOutputVariable("speed");
+
     output.push_back(0);
     output.push_back(0);
     std::string status;
-    if (not engine->isReady(&status))
+    if (not obsEngine1->isReady(&status)&& not dirEngine2->isReady(&status))
     {
         throw Exception("[engine error] engine is not ready:n" + status, FL_AT);
+        while(1)
+        {
+            std::cout << "inf loop" << std::endl;
+        }
     }
 }
 
-std::vector<double> fuzzyControl::fuzzyController(float dist, float angle)
+std::vector<double> fuzzyControl::fuzzyController(float obsDist, float obsAngle,float dirAngle)
 {
+    mutex.lock();
 
-    if(abs(angle) < 3.14/2)
+    dirAngle2  -> setValue(dirAngle);
+    dirEngine2 -> process();
+
+    output[0] = double(dirSteer2->getValue());
+    output[1] = double(dirSpeed2->getValue());
+
+    if(abs(obsAngle) < 3.14/2)
     {
 
-        mutex.lock();
-        std::string status;
-        if (not engine->isReady(&status))
-        {
-            throw Exception("[engine error] engine is not ready:n" + status, FL_AT);
-        }
-        obstacle->setValue(angle);
-        distance->setValue(dist);
-        engine->process();
+        obsAngle1->setValue(obsAngle);
+        obsDistance1->setValue(obsDist);
+        obsEngine1->process();
+        output[0] += double(obsSteer1->getValue());
+        output[1] += double(obsSpeed1->getValue());
 
-        mutex.unlock();
-
-        output[0] = double(mSteer->getValue());
-        output[1] = double(mSpeed->getValue());
-
-        std::cout << output[0] << " " << output[1] << std::endl;
     }
-    else
-    {
-        output[0] = 0;
-        output[1] = 1;
-    }
-
-    return output;
+   mutex.unlock();
+   return output;
 }

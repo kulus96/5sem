@@ -10,6 +10,7 @@
 #include "camera.h"
 #include "fuzzyControl.h"
 #include "position.h"
+#include "particelfilter.h"
 
 #include <vector>
 
@@ -26,8 +27,9 @@ int main(int _argc, char **_argv) {
   position robot;
   lidar laser;
   camera view;
-  fuzzyControl obsAvoidance;
-  //fuzzyControl directionControl;
+  fuzzyControl controller;
+  //particelFilter position("FloorPlan/Bigworld.png",laser);
+
 
   // Load gazebo
   gazebo::client::setup(_argc, _argv);
@@ -61,30 +63,36 @@ int main(int _argc, char **_argv) {
   worldPublisher->WaitForConnection();
   worldPublisher->Publish(controlMessage);
 
-  // Loop
-    obsAvoidance.init("obsAvoidance.fll");
+  while(!robot.messageRecievedPos && !view.messageRecievedCamera && !laser.messageRecievedLidar)
+  {
 
-  std::vector<double> control;
-  control.push_back(0);
-  control.push_back(0);
+  }
+
+  // Loop
+    controller.init("obsAvoidance.fll","dirControl.fll");
+    std::vector<double> control;
+    control.push_back(0);
+    control.push_back(0);
+    robot.setPath("FloorPlan/Bigworld.png");
+    std::vector<float> pointOfInterest;
 
   // Loop
   while (true)
   {  
     gazebo::common::Time::MSleep(10);
-    cv::waitKey(1);
 
-    //std::cout << "Distance: " << laser.getShortestDistance() << " Angle: " << laser.getAngleShortestDistance() << std::endl;
+    pointOfInterest = robot.getPath();
 
-    control = obsAvoidance.fuzzyController(laser.getShortestDistance(),laser.getAngleShortestDistance());
+    std::cout << "dis: " << robot.disNAngleToXY(pointOfInterest[0],pointOfInterest[1])[0] << " angle: " << robot.disNAngleToXY(pointOfInterest[0],pointOfInterest[1])[1] << std::endl;
 
+    control = controller.fuzzyController(laser.getShortestDistance(),laser.getAngleShortestDistance(),robot.disNAngleToXY(pointOfInterest[0],pointOfInterest[1])[1]);
 
-    std::cout << "marbel loc: "<< view.posMarbel()<< " Speed: " << control[1] << " Dir: " << control[0] << std::endl;
+    std::cout << "Angle: "<< robot.disNAngleToXY(pointOfInterest[0],pointOfInterest[1])[1] << " Speed: " << control[1] << " Dir: " << control[0] << std::endl;
+
+    std::cout << "posX: "<< robot.posX << " posY: " << robot.posY << " wanted: " <<pointOfInterest[0] << ","<< pointOfInterest[1] << std::endl;
 
     // Generate a pose
     ignition::math::Pose3d pose(double(control[1]), 0, 0, 0, 0, double(control[0]));
-
-
 
     // Convert to a pose message
     gazebo::msgs::Pose msg;

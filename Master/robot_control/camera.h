@@ -20,6 +20,8 @@ public:
     void showCircles();
     float posMarbel();
     bool marbelLocated();
+
+    bool messageRecievedCamera;
 private:
     vector<Vec3f> circles;
     float width;

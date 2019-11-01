@@ -46,7 +46,7 @@ std::vector<double> fuzzyControl::fuzzyController(float dist, float angle)
         output[0] = double(mSteer->getValue());
         output[1] = double(mSpeed->getValue());
 
-        std::cout << output[0] << " " << output[1] << std::endl;
+        //std::cout << output[0] << " " << output[1] << std::endl;
     }
     else
     {

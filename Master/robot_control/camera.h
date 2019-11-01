@@ -18,9 +18,15 @@ public:
     void cameraCallback(ConstImageStampedPtr &msg);
     void showHistogram(std::string const& name, cv::Mat1b const& image);
     void showCircles();
+    bool debouncePos(Point q);
+    void createBin(Mat &img, Mat &binImg);
+    void CannyDetect(Mat &img, Mat &output);
     float posMarbel();
     bool marbelLocated();
 private:
+    Point pos = Point(0,0);
+    Point center;
+    int debounceCounter = 0;
     vector<Vec3f> circles;
     float width;
     float height;

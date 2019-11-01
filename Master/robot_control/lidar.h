@@ -6,6 +6,7 @@
 #include <fl/Headers.h>
 #include <iostream>
 #include <vector>
+#include <cmath>
 #include "define.h"
 
 #define lidar_H
@@ -26,6 +27,7 @@ public:
         float getShortestDistance();
         float getAngleShortestDistance();
         float objInFront(float range);
+
 
 private:
         void showLidar();

@@ -1,5 +1,6 @@
 #include "lidar.h"
 
+
 lidar::lidar()
 {
     SL = showlidar;
@@ -107,8 +108,6 @@ void lidar::showLidar()
     mutex.unlock();
     cv::waitKey(1);
 }
-
-
 float lidar::objInFront(float range)
 {
     float tempShortesDistance = 10;

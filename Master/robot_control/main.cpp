@@ -67,24 +67,27 @@ int main(int _argc, char **_argv) {
   std::vector<double> control;
   control.push_back(0);
   control.push_back(0);
-
+  
+  int T = TimStamp;
+  std::vector<float> currPos(3,0);
   // Loop
   while (true)
   {  
-    gazebo::common::Time::MSleep(10);
+    gazebo::common::Time::MSleep(T);
     cv::waitKey(1);
 
     //std::cout << "Distance: " << laser.getShortestDistance() << " Angle: " << laser.getAngleShortestDistance() << std::endl;
 
-    control = obsAvoidance.fuzzyController(laser.getShortestDistance(),laser.getAngleShortestDistance());
+    //control = obsAvoidance.fuzzyController(laser.getShortestDistance(),laser.getAngleShortestDistance());
 
-
-    std::cout << "marbel loc: "<< view.posMarbel()<< " Speed: " << control[1] << " Dir: " << control[0] << std::endl;
+    //std::cout << "marbel loc: "<< view.posMarbel()<< " Speed: " << control[1] << " Dir: " << control[0] << std::endl;
 
     // Generate a pose
     ignition::math::Pose3d pose(double(control[1]), 0, 0, 0, 0, double(control[0]));
 
-
+    //robot.positionModel(control[1],control[0],currPos);
+    //robot.showPosition(currPos);
+  
 
     // Convert to a pose message
     gazebo::msgs::Pose msg;

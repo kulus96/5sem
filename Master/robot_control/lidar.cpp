@@ -4,11 +4,38 @@
 lidar::lidar()
 {
     SL = showlidar;
+    messageRecievedLidar = false;
+}
+
+int lidar::getNumberofLidarReadings()
+{
+    return nranges;
+}
+
+float lidar::getLidarReading(int index)
+{
+    return Laser[index].distance;
+}
+
+float lidar::getLidarRangeMax()
+{
+    return range_max;
+}
+
+float lidar::getLidarIncrement()
+{
+    return angle_increment;
+}
+
+bool lidar::lidarReady()
+{
+    return runs;
 }
 
 void lidar::lidarCallback(ConstLaserScanStampedPtr &msg)
 {
 
+    messageRecievedLidar = true;
     if(runs == 0)
     {
         nranges = msg->scan().ranges_size();
@@ -55,7 +82,6 @@ void lidar::lidarCallback(ConstLaserScanStampedPtr &msg)
           tempShortestDist = distance;
           tempAngleShortestDist = currentAngle;
       }
-
       currentAngle += angle_increment;
   }
   shortestDistance = tempShortestDist;;
@@ -111,8 +137,11 @@ void lidar::showLidar()
 float lidar::objInFront(float range)
 {
     float tempShortesDistance = 10;
+    std::cout << Laser.size() << std::endl;
     for(int i= 0; i < int(Laser.size()); i++)
     {
+        std::cout << Laser[i].angle <<  " " << Laser[i].distance<< std::endl;
+
         if(abs(Laser[i].angle)< range)
         {
             if(Laser[i].distance <tempShortesDistance)
@@ -122,4 +151,21 @@ float lidar::objInFront(float range)
         }
     }
     return tempShortesDistance;
+}
+void lidar::coutlidar()
+{
+    for(int i = 0; i<int(Laser.size());i++)
+    {
+        std::cout << "i: " << i << " Angle: " << Laser[i].angle << " Distance: "<< Laser[i].distance << std::endl;
+    }
+    runs = 2;
+
+}
+void lidar::printtoCSV(float value)
+{
+    std::fstream foutprint;
+    foutprint.open("print.csv", std::ios::out | std::ios::app);
+    foutprint<< value << ", ";
+    std::cout<< "value: " << value << std::endl;
+
 }

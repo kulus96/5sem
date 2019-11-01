@@ -10,7 +10,8 @@ SOURCES += main.cpp \
     lidar.cpp \
     camera.cpp \
     fuzzyControl.cpp \
-    position.cpp
+    position.cpp \
+    particelfilter.cpp
 
 CONFIG += link_pkgconfig
 PKGCONFIG += gazebo
@@ -21,8 +22,9 @@ HEADERS += \
     camera.h \
     fuzzyControl.h \
     define.h \
-    position.h
+    position.h \
+    particelfilter.h
 
 DISTFILES += \
     obsAvoidance.fll \
-    marbelControl.fll
+    dirControl.fll

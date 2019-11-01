@@ -1,0 +1,56 @@
+Engine: dirController
+
+InputVariable: angle
+    enabled: true
+    range: -3.14 3.14
+    lock-range: false
+    term: behindleft Ramp -2.094 -3.14
+    term: left PiShape -2.356 -1.047 -1.047 -0.523
+    term: centerleft PiShape -0.75 -0.35 -0.35 0
+    term: center Triangle -0.200 0.000 0.200
+    term: centerright PiShape 0 0.35 0.35 0.75
+    term: right PiShape 0.523 1.047 1.047 2.356
+    term: behindright Ramp  2.094 3.14
+
+OutputVariable: speed
+    enabled: true
+    range: -0.1000 1.000
+    lock-range: false
+    aggregation: Maximum
+    defuzzifier: Centroid 100
+    default: 0
+    lock-previous: false
+    term: stop Ramp 0.0500 -0.1000
+    term: slow PiShape -0.020 0.10 0.20 0.300
+    term: fast Ramp 0.250 1.000
+
+OutputVariable: steer
+    enabled: true
+    range: -0.3 0.3
+    lock-range: false
+    aggregation: Maximum
+    defuzzifier: Centroid 100
+    default: 0
+    lock-previous: false
+    term: steerhardright Ramp -0.100 -0.300
+    term: steerright PiShape -0.20 -0.125 -0.075 -0.05
+    term: steerrightsmall PiShape -0.075 -0.025 -0.025 0.00
+    term: steerstraight Rectangle -0.010 0.010
+    term: steerleftsmall PiShape 0.00 0.0250 0.0250 0.0750
+    term: steerleft PiShape 0.05 0.075 0.125 0.2
+    term: steerhardleft Ramp 0.1 0.300
+
+RuleBlock: mamdani
+    enabled: true
+    conjunction: Minimum
+    disjunction: Maximum
+    implication: Minimum
+    activation: General
+
+    rule: if angle is behindleft then speed is stop and steer is steerhardleft
+    rule: if angle is left then speed is slow and steer is steerleft
+    rule: if angle is centerleft then speed is fast and steer is steerleftsmall
+    rule: if angle is center then speed is fast and steer is steerstraight
+    rule: if angle is centerright then speed is fast and steer is steerrightsmall
+    rule: if angle is right then speed is slow and steer is steerright
+    rule: if angle is behindright then speed is stop and steer is steerhardright

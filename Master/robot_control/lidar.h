@@ -8,6 +8,8 @@
 #include <vector>
 #include <cmath>
 #include "define.h"
+#include <fstream>
+
 
 #define lidar_H
 
@@ -27,6 +29,15 @@ public:
         float getShortestDistance();
         float getAngleShortestDistance();
         float objInFront(float range);
+        void coutlidar();
+        void printtoCSV(float);
+        float getLidarReading(int index);
+        int getNumberofLidarReadings();
+        float getLidarRangeMax();
+        float getLidarIncrement();
+        bool  lidarReady();
+
+        bool messageRecievedLidar;
 
 
 private:

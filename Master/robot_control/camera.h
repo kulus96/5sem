@@ -23,6 +23,8 @@ public:
     void CannyDetect(Mat &img, Mat &output);
     float posMarbel();
     bool marbelLocated();
+
+    bool messageRecievedCamera;
 private:
     Point pos = Point(0,0);
     Point center;

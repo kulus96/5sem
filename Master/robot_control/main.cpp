@@ -10,6 +10,7 @@
 #include "camera.h"
 #include "fuzzyControl.h"
 #include "position.h"
+#include "particelfilter.h"
 
 #include <vector>
 
@@ -26,8 +27,9 @@ int main(int _argc, char **_argv) {
   position robot;
   lidar laser;
   camera view;
-  fuzzyControl obsAvoidance;
-  //fuzzyControl directionControl;
+  fuzzyControl controller;
+  //particelFilter position("FloorPlan/Bigworld.png",laser);
+
 
   // Load gazebo
   gazebo::client::setup(_argc, _argv);
@@ -61,9 +63,12 @@ int main(int _argc, char **_argv) {
   worldPublisher->WaitForConnection();
   worldPublisher->Publish(controlMessage);
 
-  // Loop
-    obsAvoidance.init("obsAvoidance.fll");
+  while(!robot.messageRecievedPos && !view.messageRecievedCamera && !laser.messageRecievedLidar)
+  {
 
+  }
+
+<<<<<<< HEAD
   std::vector<double> control;
   control.push_back(0);
   control.push_back(0);
@@ -75,20 +80,47 @@ int main(int _argc, char **_argv) {
   {  
     gazebo::common::Time::MSleep(T);
     cv::waitKey(1);
+=======
+  // Loop
+    controller.init("obsAvoidance.fll","dirControl.fll");
+    std::vector<double> control;
+    control.push_back(0);
+    control.push_back(0);
+    robot.setPath("FloorPlan/Bigworld.png");
+    std::vector<float> pointOfInterest;
 
-    //std::cout << "Distance: " << laser.getShortestDistance() << " Angle: " << laser.getAngleShortestDistance() << std::endl;
+  // Loop
+  while (true)
+  {  
+    gazebo::common::Time::MSleep(10);
+>>>>>>> ee34274a9fa558da96ea8278523a88ede6fcd9e7
 
+    pointOfInterest = robot.getPath();
+
+    std::cout << "dis: " << robot.disNAngleToXY(pointOfInterest[0],pointOfInterest[1])[0] << " angle: " << robot.disNAngleToXY(pointOfInterest[0],pointOfInterest[1])[1] << std::endl;
+
+<<<<<<< HEAD
     //control = obsAvoidance.fuzzyController(laser.getShortestDistance(),laser.getAngleShortestDistance());
 
     //std::cout << "marbel loc: "<< view.posMarbel()<< " Speed: " << control[1] << " Dir: " << control[0] << std::endl;
+=======
+    control = controller.fuzzyController(laser.getShortestDistance(),laser.getAngleShortestDistance(),robot.disNAngleToXY(pointOfInterest[0],pointOfInterest[1])[1]);
+
+    std::cout << "Angle: "<< robot.disNAngleToXY(pointOfInterest[0],pointOfInterest[1])[1] << " Speed: " << control[1] << " Dir: " << control[0] << std::endl;
+
+    std::cout << "posX: "<< robot.posX << " posY: " << robot.posY << " wanted: " <<pointOfInterest[0] << ","<< pointOfInterest[1] << std::endl;
+>>>>>>> ee34274a9fa558da96ea8278523a88ede6fcd9e7
 
     // Generate a pose
     ignition::math::Pose3d pose(double(control[1]), 0, 0, 0, 0, double(control[0]));
 
+<<<<<<< HEAD
     //robot.positionModel(control[1],control[0],currPos);
     //robot.showPosition(currPos);
   
 
+=======
+>>>>>>> ee34274a9fa558da96ea8278523a88ede6fcd9e7
     // Convert to a pose message
     gazebo::msgs::Pose msg;
     gazebo::msgs::Set(&msg, pose);

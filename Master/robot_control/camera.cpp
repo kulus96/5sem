@@ -3,11 +3,14 @@
 camera::camera()
 {
     SC = showcamera;
+    messageRecievedCamera = false;
 }
 
 
 void camera::cameraCallback(ConstImageStampedPtr &msg)
 {
+    messageRecievedCamera = true;
+
     width = msg->image().width();
     height = msg->image().height();
     const char *data = msg->image().data().c_str();

@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <fl/Headers.h>
 
+
 #include <iostream>
 #include <vector>
 #include "define.h"
@@ -19,6 +20,7 @@ public:
     void showHistogram(std::string const& name, cv::Mat1b const& image);
     void showCircles();
     bool debouncePos(Point q);
+    
     void createBin(Mat &img, Mat &binImg);
     void CannyDetect(Mat &img, Mat &output);
     float posMarbel();

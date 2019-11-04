@@ -56,10 +56,6 @@ std::vector<double> fuzzyControl::fuzzyController(float obsDist, float obsAngle,
         output[0] += double(obsSteer1->getValue());
         output[1] += double(obsSpeed1->getValue());
 
-<<<<<<< HEAD
-        //std::cout << output[0] << " " << output[1] << std::endl;
-=======
->>>>>>> ee34274a9fa558da96ea8278523a88ede6fcd9e7
     }
    mutex.unlock();
    return output;

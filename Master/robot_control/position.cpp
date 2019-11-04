@@ -26,7 +26,7 @@ void position::poseCallback(ConstPosesStampedPtr &_msg) {
           oriX = _msg->pose(i).orientation().x();
           oriY = _msg->pose(i).orientation().y();
           oriZ = _msg->pose(i).orientation().z();
-          if(CP)
+          /*if(CP)
           {
               std::cout << std::setprecision(2) << std::fixed << std::setw(6)
             << _msg->pose(i).position().x() << std::setw(6)
@@ -36,7 +36,7 @@ void position::poseCallback(ConstPosesStampedPtr &_msg) {
             << _msg->pose(i).orientation().x() << std::setw(6)
             << _msg->pose(i).orientation().y() << std::setw(6)
             << _msg->pose(i).orientation().z() << std::endl;
-          }
+          }*/
       }
     }
     ToEulerAngles();

@@ -6,7 +6,69 @@ camera::camera()
     messageRecievedCamera = false;
 }
 
+namespace
+{
+    // windows and trackbars name
+    const std::string windowName = "Hough Circle Detection Demo";
+    const std::string cannyThresholdTrackbarName = "Lower threshold";
+    const std::string accumulatorThresholdTrackbarName = "Upper threshold";
 
+    // initial and max values of the parameters of interests.
+    /*const int cannyThresholdInitialValue = 100;
+    const int accumulatorThresholdInitialValue = 50;
+    const int maxAccumulatorThreshold = 200;
+    const int maxCannyThreshold = 255;
+    */
+    const int lowerinit = 0;
+    const int upperinit = 200;
+    const int maxlower = 255;
+    const int maxupper = 255;
+
+    void HoughDetection(const Mat& src_gray, const Mat& src_display,int lower, int upper)// int cannyThreshold, int accumulatorThreshold)
+    {
+        /*// will hold the results of the detection
+        std::vector<Vec3f> circles;
+        // runs the actual detection
+        HoughCircles( src_gray, circles, CV_HOUGH_GRADIENT, 1, src_gray.rows/8, cannyThreshold, accumulatorThreshold, 0, 0 );
+
+        // clone the colour, input image for displaying purposes
+        Mat display = src_display.clone();
+        for( size_t i = 0; i < circles.size(); i++ )
+        {
+            Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+            int radius = cvRound(circles[i][2]);
+            // circle center
+            circle( display, center, 3, Scalar(0,255,0), -1, 8, 0 );
+            // circle outline
+            circle( display, center, radius, Scalar(0,0,255), 3, 8, 0 );
+        }*/
+        Mat display = src_gray.clone();
+    for(int i = 0; i < src_gray.rows; i++)
+    {
+        for(int k = 0; k < src_gray.cols; k++)
+        {
+            if(src_gray.at<uchar>(i,k) >lower& src_gray.at<uchar>(i,k) < upper)//88&& imGray.at<uchar>(i,k) < 100)
+            {
+               display.at<uchar>(i,k) = 255;
+            }
+            else
+            {
+                display.at<uchar>(i,k) = 0;
+            }
+        }
+    }
+    for(int i = 0; i<3;i++)
+    {
+        cv::dilate(display,display,Mat());
+    }
+    for(int i = 0; i<7;i++)
+    {
+        cv::erode(display,display,Mat());
+    }
+        // shows the results
+        imshow( windowName, display);
+    }
+}
 void camera::cameraCallback(ConstImageStampedPtr &msg)
 {
     messageRecievedCamera = true;
@@ -23,74 +85,126 @@ void camera::cameraCallback(ConstImageStampedPtr &msg)
     
     cv::cvtColor(im, imGray, CV_RGB2GRAY);
 
-    cv::medianBlur(imGray,imGray,11);
-
+    cv::medianBlur(imGray,imGray,1);
+    int lower = lowerinit;
+    int upper = upperinit;
     //Apply thresholding
-    /*for(int i = 0; i < imGray.rows; i++)
+    for(int i = 0; i < imGray.rows; i++)
     {
         for(int k = 0; k < imGray.cols; k++)
         {
-            if(imGray.at<uchar>(i,k) >88&& imGray.at<uchar>(i,k) < 100)
+            if(imGray.at<uchar>(i,k) >98& imGray.at<uchar>(i,k) < 113)//88&& imGray.at<uchar>(i,k) < 100)
             {
-               imGray.at<uchar>(i,k) = 0;
+               imGray.at<uchar>(i,k) = 255;
             }
             else
             {
-                imGray.at<uchar>(i,k) = 255;
+                imGray.at<uchar>(i,k) = 0;
             }
         }
     }
-    cv::threshold(imGray, imGray, 100, 255, cv::THRESH_BINARY);
-    */
-    adaptiveThreshold(imGray,imGray,255,ADAPTIVE_THRESH_GAUSSIAN_C,THRESH_BINARY,5,0);
     
-    for(int i = 0; i<2;i++)
+    //cv::threshold(imGray, imGray, 100, 255, cv::THRESH_BINARY);
+ 
+
+   
+    /*namedWindow( windowName, WINDOW_AUTOSIZE );
+    createTrackbar(cannyThresholdTrackbarName, windowName, &lower,maxlower);
+    createTrackbar(accumulatorThresholdTrackbarName, windowName, &upper, maxupper);*/
+
+    adaptiveThreshold(imGray,imGray,255,ADAPTIVE_THRESH_GAUSSIAN_C,THRESH_BINARY,5,0);
+
+    //char key = 0;
+    /*while(key != 'q' && key != 'Q')
+    {
+        // those parameters cannot be =0
+        // so we must check here
+        lower = std::max(lower, 1);
+        upper = std::max(upper, 1);
+
+        //runs the detection, and update the display
+        HoughDetection(imGray, imGray, lower, upper);
+        //std::cout << cannyThreshold << std::endl;
+        // get user key
+        key = (char)waitKey(2);
+    }*/
+    for(int i = 0; i<3;i++)
     {
         cv::dilate(imGray,imGray,Mat());
     }
-    for(int i = 0; i<10;i++)
+    for(int i = 0; i<4;i++)
     {
         cv::erode(imGray,imGray,Mat());
     }
+    namedWindow("with yest",1);
+    imshow("with yest",imGray);
 
     vector<vector<Point>> contours;
     vector<Vec4i> hierarchy;
+
 
     findContours(imGray,// source image
     contours, //Detected contours
     hierarchy, //*optional. Contains the image topology
     CV_RETR_TREE, // contour retrieval mode. Contours organized in two level hierarchy
     CV_CHAIN_APPROX_SIMPLE); //method of contour approximation. 
-    vector <Rect> boundRect(contours.size());
-    vector<vector<Point>> contours_poly(contours.size());
+
+    vector<vector<Point> > contours_poly( contours.size() );
+    vector<Rect> boundRect( contours.size() );
+
+    for( int i = 0; i < contours.size(); i++ )
+    { 
+        approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
+        boundRect[i] = boundingRect( Mat(contours_poly[i]) );
+        //minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );
+    }
 
     for(int idx=0;idx < contours.size();idx++)
     {
-        boundRect[idx] = boundingRect(contours_poly[idx]);
-        if(idx<1)
+        if(idx==0)
         {
+            
             Scalar color(0, 0,0);
-            drawContours(imBin,contours,idx,color,CV_FILLED,8,hierarchy);
+            drawContours(imGray,contours,idx,color,CV_FILLED,8,hierarchy);
+            
         }
         else
         {
             Scalar color(255, 255, 255);
-            drawContours(imBin,contours,idx,color,CV_FILLED,8,hierarchy);
-            rectangle(imBin,boundRect[idx].tl(),boundRect[idx].br(),Scalar(0,255,0),2);
+            
+            drawContours(imGray,contours,idx,color,CV_FILLED,8,hierarchy);
+            //rectangle( im, boundRect[idx].tl(), boundRect[idx].br(), Scalar(0,255,0), 2, 8, 0 );
         }
     }
 
-    Mat test;
-    CannyDetect(imBin,test);
-    namedWindow("with CannyDetect",1);
-    imshow("with CannyDetect",test);
+    namedWindow("with yest2",1);
+    imshow("with yest2",imGray);
 
-    cvtColor(test,test,COLOR_BGR2GRAY);
+    RotatedRect rectA;
+    vector<Point2f> rect_points(4);
+
+    for(int i = 0; i < contours.size();i++)
+    {
+        int rectArea = boundRect[i].width*boundRect[i].height;
+        rectA = minAreaRect(contours[i]);
+        int minArea = rectA.size.width * rectA.size.height;
+        //int rotatedArea = rectA.points*rectA[1][1];
+        std::cout << boundRect[i].height << " , " << boundRect[i].width << std::endl;
+
+        if(contourArea(contours[i]) < minArea*0.70 && minArea > 100)//rectArea*0.8)
+        {
+            if(boundRect[i].height >= boundRect[i].width)
+            {
+                rectangle( im, boundRect[i].tl(), boundRect[i].br(), Scalar(0,255,0), 2, 8, 0 );
+            }
+        }
+    }
       /// Apply the Hough Transform to find the circles
-
-    HoughCircles( test, circles, CV_HOUGH_GRADIENT, 2,80, 100, 20, 20, 60 );
+    
+    /*HoughCircles( imGray, circles, CV_HOUGH_GRADIENT, 2,80, 23, 21, 0, 0 );
 
     /// Draw the circles detected
+    
     for( size_t i = 0; i < circles.size(); i++ )
     {
 
@@ -103,6 +217,7 @@ void camera::cameraCallback(ConstImageStampedPtr &msg)
             circle( im, center, 3, Scalar(0,255,0), -1, 8, 0 );
             // circle outline
             circle( im, center, radius, Scalar(0,0,255), 3, 8, 0 );
+            
         }
         else
         {
@@ -110,24 +225,19 @@ void camera::cameraCallback(ConstImageStampedPtr &msg)
         }
     
     }
-    //cv::imshow("gray", imGray);
 
+    //cv::imshow("gray", imGray);*/
+    
     
     mutex.lock();
     cv::imshow("camera", im);
     //std::cout << "Hello" << std::endl;
     mutex.unlock();
     waitKey(1);
+    
 }
-void camera::createBin(Mat &img, Mat &binImg)
-{
-	Mat five_by_five_element(5, 5, CV_8U, Scalar(1));
-	cvtColor(img, binImg, COLOR_BGR2GRAY);
-	threshold(binImg, binImg, 100, 255, THRESH_BINARY);// | THRESH_OTSU);
 
-	morphologyEx(binImg, binImg, MORPH_OPEN, five_by_five_element);
-	morphologyEx(binImg, binImg, MORPH_CLOSE, five_by_five_element);
-}
+
 
 void camera::CannyDetect(Mat &img, Mat &output)
 {
